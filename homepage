@@ -27,8 +27,19 @@ class VideoHomepage:
         l2.grid(row=1, column=2, sticky=tk.NSEW, padx=10, pady=(10, 0))
         
         self.root.grid_rowconfigure(1, weight=1)
+        
+        b1 = tk.Button(self.root, text= "Add Videos", height=2)
+        b1.grid(row=2, column=0, sticky='ew', padx=5, pady=5)
+        
+     #   b2 = tk.Button(self.root, text= "Remove Videos", height=2)
+     #   b2.grid(row=2, column=0, sticky='ew', padx=5, pady=5)
+        
+        b3 = tk.Button(self.root, text= "View List", height=2)
+        b3.grid(row=2, column=2, sticky='ew', padx=5, pady=5)
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = VideoHomepage(root)
     root.mainloop()
+
+
