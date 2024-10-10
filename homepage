@@ -30,25 +30,21 @@ class VideoHomepage:
         
         #column 1 buttons
         
-        b1 = tk.Button(self.root, text= "+ Add Videos", height=2)
+        b1 = tk.Button(self.root, text= "+ Add Videos", height=3)
         b1.grid(row=2, column=0, sticky='ew', padx=5, pady=5)
         
-        b2 = tk.Button(self.root, text= "- Remove Videos", height=2)
+        b2 = tk.Button(self.root, text= "- Remove Videos", height=3)
         b2.grid(row=3, column=0, sticky='ew', padx=5, pady=5)
         
-     #   b3 = tk.Button(self.root, text= "View Video List", height=2)
-     #   b3.grid(row=4, column=0, sticky='ew', padx=5, pady=5)
         
         #column 2 buttons
         
-        b4 = tk.Button(self.root, text= "+ Add Customer", height=2)
-        b4.grid(row=2, column=2, sticky='ew', padx=5, pady=5)
+        b3 = tk.Button(self.root, text= "+ Add Customer", height=3)
+        b3.grid(row=2, column=2, sticky='ew', padx=5, pady=5)
         
-        b5 = tk.Button(self.root, text= "- Remove Customer", height=2)
-        b5.grid(row=3, column=2, sticky='ew', padx=5, pady=5)
-        
-     #   b6 = tk.Button(self.root, text= "View Customer List", height=2)
-     #   b6.grid(row=4, column=2, sticky='ew', padx=5, pady=5)
+        b4 = tk.Button(self.root, text= "- Remove Customer", height=3)
+        b4.grid(row=3, column=2, sticky='ew', padx=5, pady=5)
+
 
 if __name__ == "__main__":
     root = tk.Tk()
