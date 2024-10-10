@@ -20,8 +20,8 @@ class VideoHomepage:
         l1 = tk.Label(self.root, text="Video Inventory", anchor='n')
         l1.grid(row=1, column=0, sticky=tk.NSEW, padx=10, pady=(10, 0))
         
-        line = tk.Frame(self.root, width=2, bg="white")
-        line.grid(row=1, column=1,  rowspan=4, sticky=tk.NS)
+        line = tk.Frame(self.root, width=2, bg="black")
+        line.grid(row=1, column=1, rowspan=4, sticky=tk.NS)
         
         l2 = tk.Label(self.root, text="Customer Information", anchor='n')
         l2.grid(row=1, column=2, sticky=tk.NSEW, padx=10, pady=(10, 0))
@@ -36,8 +36,8 @@ class VideoHomepage:
         b2 = tk.Button(self.root, text= "- Remove Videos", height=2)
         b2.grid(row=3, column=0, sticky='ew', padx=5, pady=5)
         
-        b3 = tk.Button(self.root, text= "View Video List", height=2)
-        b3.grid(row=4, column=0, sticky='ew', padx=5, pady=5)
+     #   b3 = tk.Button(self.root, text= "View Video List", height=2)
+     #   b3.grid(row=4, column=0, sticky='ew', padx=5, pady=5)
         
         #column 2 buttons
         
@@ -47,12 +47,10 @@ class VideoHomepage:
         b5 = tk.Button(self.root, text= "- Remove Customer", height=2)
         b5.grid(row=3, column=2, sticky='ew', padx=5, pady=5)
         
-        b6 = tk.Button(self.root, text= "View Customer List", height=2)
-        b6.grid(row=4, column=2, sticky='ew', padx=5, pady=5)
+     #   b6 = tk.Button(self.root, text= "View Customer List", height=2)
+     #   b6.grid(row=4, column=2, sticky='ew', padx=5, pady=5)
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = VideoHomepage(root)
     root.mainloop()
-
-
