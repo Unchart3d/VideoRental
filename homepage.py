@@ -1,4 +1,7 @@
 import tkinter as tk
+import subprocess
+from customer_information import CustomerManagementApp
+from VideoPage import VideoPage
 
 class VideoHomepage:
     def __init__(self, root):
@@ -48,13 +51,17 @@ class VideoHomepage:
         #button functionality
 
     def open_addcus(self):
-        subprocess.Popen(['python', 'customer information.py'])
+        new_window = tk.Toplevel(self.root)
+        CustomerManagementApp(new_window)
 
     def open_addvid(self):
-        subprocess.Popen(['python', 'VideoPage.py'])
+        new_window = tk.Toplevel(self.root)
+        VideoPage(new_window)
 
 
 if __name__ == "__main__":
     root = tk.Tk()
     app = VideoHomepage(root)
     root.mainloop()
+
+
