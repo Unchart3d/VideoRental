@@ -30,7 +30,7 @@ class VideoHomepage:
         
         #column 1 buttons
         
-        b1 = tk.Button(self.root, text= "+ Add Videos", height=3)
+        b1 = tk.Button(self.root, text= "+ Add Videos", height=3, command=self.open_addvid)
         b1.grid(row=2, column=0, sticky='ew', padx=5, pady=5)
         
         b2 = tk.Button(self.root, text= "- Remove Videos", height=3)
@@ -49,6 +49,9 @@ class VideoHomepage:
 
     def open_addcus(self):
         subprocess.Popen(['python', 'customer information.py'])
+
+    def open_addvid(self):
+        subprocess.Popen(['python', 'VideoPage.py'])
 
 
 if __name__ == "__main__":
