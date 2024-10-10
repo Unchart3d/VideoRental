@@ -39,7 +39,7 @@ class VideoHomepage:
         
         #column 2 buttons
         
-        b3 = tk.Button(self.root, text= "+ Add Customer", height=3)
+        b3 = tk.Button(self.root, text= "+ Add Customer", height=3, command=self.open_addcus)
         b3.grid(row=2, column=2, sticky='ew', padx=5, pady=5)
         
         b4 = tk.Button(self.root, text= "- Remove Customer", height=3)
