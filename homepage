@@ -45,6 +45,11 @@ class VideoHomepage:
         b4 = tk.Button(self.root, text= "- Remove Customer", height=3)
         b4.grid(row=3, column=2, sticky='ew', padx=5, pady=5)
 
+        #button functionality
+
+    def open_addcus(self):
+        subprocess.Popen(['python', 'customer information.py'])
+
 
 if __name__ == "__main__":
     root = tk.Tk()
