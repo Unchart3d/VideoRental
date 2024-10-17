@@ -21,7 +21,7 @@ class VideoHomepage:
         
 
         search_frame = tk.Frame(self.root)
-        search_frame.grid(row=1, column=0, pady=10, sticky="ew") 
+        search_frame.grid(row=2, column=0, pady=10, sticky="ew") 
  
         search_label = tk.Label(search_frame, text="Search:", font=("Noteworthy", 18))
         search_label.pack(side=tk.LEFT)
@@ -62,8 +62,24 @@ class VideoHomepage:
         #button functionality
 
     def search(self):
-        query = self.search_entry.get()
-        messagebox.showinfo("Search", f"You searched for: {query}")
+        if self.search['text'] == "Search":
+            search_term = self.search.get().strip()
+            listbox_items = self.listbox.get(0, tk.END)
+            results = [item for item in listbox_items if search_term.lower() in item.lower()]
+        
+            self.listbox.delete(0, tk.END)
+            for result in results:
+                self.listbox.insert(tk.END, results)
+                
+            if results:
+                self.search.config(text="Undo Search")
+        else:
+            self.listbox.delete(0, tk.END)
+            for item in self.original_items:
+                self.listbox.insert(tk.END, item)
+                
+            self.search.config(text="Search")
+            self.search.delete(0, tk.END)
 
     def open_addcus(self):
         new_window = tk.Toplevel(self.root)
