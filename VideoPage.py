@@ -325,6 +325,7 @@ class VideoPage:
                 self.listbox.insert(tk.END, item)
                 
             self.search_button.config(text="Search")
+            self.search.delete(0, tk.END)
 
     def clear_fields(self):
         # Clear the input fields
