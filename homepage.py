@@ -15,6 +15,22 @@ class VideoHomepage:
                 
         title_label = tk.Label(title_frame, text="Video Store Homepage", bg="gray", font=("Arial", 24))
         title_label.pack(pady=5)
+
+        
+
+        search_frame = tk.Frame(self.root)
+        search_frame.grid(row=1, column=0, pady=10, sticky="ew") 
+ 
+        search_label = tk.Label(search_frame, text="Search:", font=("Noteworthy", 18))
+        search_label.pack(side=tk.LEFT)
+ 
+        self.search_entry = tk.Entry(search_frame, width=15, font=("Noteworthy", 18))
+        self.search_entry.pack(side=tk.LEFT, padx=(5, 0))
+ 
+        search_button = tk.Button(search_frame, text="Search", command=self.search, font=("Noteworthy", 18))
+        search_button.pack(side=tk.LEFT, padx=(5, 0))
+
+        
         
         self.root.grid_columnconfigure(0, weight=1)  # Column 1
         self.root.grid_columnconfigure(1, weight=0)  # Column for the line
@@ -36,19 +52,16 @@ class VideoHomepage:
         b1 = tk.Button(self.root, text= "+ Add Videos", height=3, command=self.open_addvid)
         b1.grid(row=2, column=0, sticky='ew', padx=5, pady=5)
         
-        b2 = tk.Button(self.root, text= "- Remove Videos", height=3)
-        b2.grid(row=3, column=0, sticky='ew', padx=5, pady=5)
-        
-        
         #column 2 buttons
         
         b3 = tk.Button(self.root, text= "+ Add Customer", height=3, command=self.open_addcus)
         b3.grid(row=2, column=2, sticky='ew', padx=5, pady=5)
-        
-        b4 = tk.Button(self.root, text= "- Remove Customer", height=3)
-        b4.grid(row=3, column=2, sticky='ew', padx=5, pady=5)
 
         #button functionality
+
+    def search(self):
+        query = self.search_entry.get()
+        messagebox.showinfo("Search", f"You searched for: {query}")
 
     def open_addcus(self):
         new_window = tk.Toplevel(self.root)
