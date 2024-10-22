@@ -9,7 +9,7 @@ class VideoHomepage:
     def __init__(self, root):
         self.root = root
         self.root.title("Video Homepage")
-        self.root.geometry("800x600")
+        self.root.geometry("1000x600")
         
         title_frame = tk.Frame(self.root, height=40)
         title_frame.grid(row=0, column=0, columnspan=3, sticky="ew")
@@ -24,13 +24,27 @@ class VideoHomepage:
         search_frame.grid(row=2, column=0, pady=10, sticky="ew") 
  
         search_label = tk.Label(search_frame, text="Search:", font=("Noteworthy", 18))
-        search_label.pack(side=tk.LEFT)
+        search_label.pack()
  
         self.search_entry = tk.Entry(search_frame, width=15, font=("Noteworthy", 18))
-        self.search_entry.pack(side=tk.LEFT, padx=(5, 0))
+        self.search_entry.pack()
  
         search_button = tk.Button(search_frame, text="Search", command=self.search, font=("Noteworthy", 18))
-        search_button.pack(side=tk.LEFT, padx=(5, 0))
+        search_button.pack()
+        
+        
+        
+        search_frame = tk.Frame(self.root)
+        search_frame.grid(row=2, column=2, pady=10, sticky="ew") 
+ 
+        search_label = tk.Label(search_frame, text="Search:", font=("Noteworthy", 18))
+        search_label.pack()
+ 
+        self.search_entry = tk.Entry(search_frame, width=15, font=("Noteworthy", 18))
+        self.search_entry.pack()
+ 
+        search_button = tk.Button(search_frame, text="Search", command=self.search, font=("Noteworthy", 18))
+        search_button.pack()
          
         
         
@@ -52,12 +66,12 @@ class VideoHomepage:
         #column 1 buttons
         
         b1 = tk.Button(self.root, text= "+ Add Videos", height=5, command=self.open_addvid, font=('Noteworthy', 18))
-        b1.grid(row=3, column=0, sticky='ew', padx=5, pady=5)
+        b1.grid(row=4, column=0, sticky='ew', padx=5, pady=5)
         
         #column 2 buttons
         
         b3 = tk.Button(self.root, text= "+ Add Customer", height=5, command=self.open_addcus, font=('Noteworthy', 18))
-        b3.grid(row=3, column=2, sticky='ew', padx=5, pady=5)
+        b3.grid(row=4, column=2, sticky='ew', padx=5, pady=5)
         
         #button functionality
         
@@ -73,6 +87,7 @@ class VideoHomepage:
                 
             if results:
                 self.search.config(text="Undo Search")
+                
         else:
             self.listbox.delete(0, tk.END)
             for item in self.original_items:
@@ -95,5 +110,4 @@ if __name__ == "__main__":
     root = tk.Tk()
     app = VideoHomepage(root)
     root.mainloop()
-
 
