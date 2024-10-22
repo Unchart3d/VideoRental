@@ -1,13 +1,13 @@
 import tkinter as tk
-from tkinter import messagebox
-from tkinter import filedialog
+from tkinter import messagebox, ttk
+
 class CustomerManagementApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Customer Management")
-        self.root.geometry("800x700")
+        self.root.geometry("1000x500")
 
-        # Customer Information Input 
+        # Customer Information 
         tk.Label(root, text="First Name").grid(row=0, column=0, padx=10, pady=10)
         self.first_name_input = tk.Entry(root)
         self.first_name_input.grid(row=0, column=1, padx=10, pady=10)
@@ -38,12 +38,17 @@ class CustomerManagementApp:
         self.delete_customer_button = tk.Button(root, text="Delete Customer", command=self.delete_customer)
         self.delete_customer_button.grid(row=3, column=2, padx=10, pady=10)
 
-        self.save_to_file_button = tk.Button(root, text="Save to File", command=self.save_video)
+        self.save_to_file_button = tk.Button(root, text="Save to File", command=self.save_to_file)
         self.save_to_file_button.grid(row=3, column=3, padx=10, pady=10)
 
-        # Listbox to Display Customers
-        self.customer_listbox = tk.Listbox(root)
-        self.customer_listbox.grid(row=4, column=0, columnspan=4, padx=10, pady=20, sticky="nsew")
+        #  list Customers as a Table
+        self.customer_tree = ttk.Treeview(root, columns=("First Name", "Last Name", "Email", "Address", "Phone Number"), show="headings")
+        self.customer_tree.heading("First Name", text="First Name")
+        self.customer_tree.heading("Last Name", text="Last Name")
+        self.customer_tree.heading("Email", text="Email")
+        self.customer_tree.heading("Address", text="Address")
+        self.customer_tree.heading("Phone Number", text="Phone Number")
+        self.customer_tree.grid(row=4, column=0, columnspan=4, padx=10, pady=20, sticky="nsew")
 
         self.customers = []
 
@@ -57,15 +62,21 @@ class CustomerManagementApp:
         if not all([first_name, last_name, address, phone_number, email]):
             messagebox.showwarning("Input Error", "Please fill in all fields")
         else:
-            customer = f"{first_name} {last_name} - {phone_number} - {email} - {address}"
+            customer = {
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email,
+                "address": address,
+                "phone_number": phone_number
+            }
             self.customers.append(customer)
-            self.customer_listbox.insert(tk.END, customer)
+            self.customer_tree.insert("", tk.END, values=(first_name, last_name, email, address, phone_number))
             self.clear_fields()
             messagebox.showinfo("Success", "Customer added")
 
     def update_customer(self):
-        selected_index = self.customer_listbox.curselection()
-        if selected_index:
+        selected_item = self.customer_tree.selection()
+        if selected_item:
             first_name = self.first_name_input.get().strip()
             last_name = self.last_name_input.get().strip()
             address = self.address_input.get().strip()
@@ -75,20 +86,27 @@ class CustomerManagementApp:
             if not all([first_name, last_name, address, phone_number, email]):
                 messagebox.showwarning("Input Error", "Please fill in all fields")
             else:
-                customer = f"{first_name} {last_name} - {phone_number} - {email} - {address}"
-                self.customers[selected_index[0]] = customer
-                self.customer_listbox.delete(selected_index)
-                self.customer_listbox.insert(selected_index, customer)
+                customer = {
+                    "first_name": first_name,
+                    "last_name": last_name,
+                    "email": email,
+                    "address": address,
+                    "phone_number": phone_number
+                }
+                index = self.customer_tree.index(selected_item)
+                self.customers[index] = customer
+                self.customer_tree.item(selected_item, values=(first_name, last_name, email, address, phone_number))
                 self.clear_fields()
                 messagebox.showinfo("Success", "Customer updated")
         else:
             messagebox.showwarning("Selection Error", "Please select a customer to update")
 
     def delete_customer(self):
-        selected_index = self.customer_listbox.curselection()
-        if selected_index:
-            self.customers.pop(selected_index[0])
-            self.customer_listbox.delete(selected_index)
+        selected_item = self.customer_tree.selection()
+        if selected_item:
+            index = self.customer_tree.index(selected_item)
+            self.customers.pop(index)
+            self.customer_tree.delete(selected_item)
             messagebox.showinfo("Success", "Customer deleted")
         else:
             messagebox.showwarning("Selection Error", "Please select a customer to delete")
@@ -100,26 +118,10 @@ class CustomerManagementApp:
         self.phone_number_input.delete(0, tk.END)
         self.email_input.delete(0, tk.END)
 
-
-    # save file
-    def save_video(self):
-        # Save the videos to a file chosen by the user
-        file_path = filedialog.asksaveasfilename(defaultextension=".txt", 
-                                             filetypes=[("Text files", "*.txt"),
-                                                        ("All files", "*.*")])
-        if file_path:
-            try:
-                with open(file_path, 'w') as file:
-                    for video in self.videos:
-                        # Save each video's information, including rental status
-                        file.write(str(video) + "\n")
-            except Exception as e:
-                messagebox.showerror("Error", f"Error saving file: {str(e)}")
-
     def save_to_file(self):
         with open("customers.txt", "w") as file:
             for customer in self.customers:
-                file.write(customer + "\n")
+                file.write(f"{customer['first_name']} {customer['last_name']} - {customer['email']} - {customer['address']} - {customer['phone_number']}\n")
         messagebox.showinfo("Success", "Customer data saved to customers.txt")
 
 if __name__ == "__main__":
