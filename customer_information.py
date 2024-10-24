@@ -1,6 +1,18 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
+import os
 
+class Customer:
+    def __init__(self, firstName, lastName, address, phone, email):
+        self.firstName = firstName
+        self.lastName = lastName
+        self.address = address
+        self.phone = phone
+        self.email = email
+        
+    def __str__(self):
+        return f"{self.firstName} | {self.lastName} | {self.address} | {self.phone} | {self.email}"
+        
 class CustomerManagementApp:
     def __init__(self, root):
         self.root = root
@@ -51,6 +63,8 @@ class CustomerManagementApp:
         self.customer_tree.grid(row=4, column=0, columnspan=4, padx=10, pady=20, sticky="nsew")
 
         self.customers = []
+
+        self.open_file()
 
     def add_customer(self):
         first_name = self.first_name_input.get().strip()
@@ -121,8 +135,27 @@ class CustomerManagementApp:
     def save_to_file(self):
         with open("customers.txt", "w") as file:
             for customer in self.customers:
-                file.write(f"{customer['first_name']} {customer['last_name']} - {customer['email']} - {customer['address']} - {customer['phone_number']}\n")
+                file.write(f"{customer['first_name']} - {customer['last_name']} - {customer['email']} - {customer['address']} - {customer['phone_number']}\n")
         messagebox.showinfo("Success", "Customer data saved to customers.txt")
+        
+    def open_file(self):
+        if os.path.exists("customers.txt"):
+            self.customer_tree.delete(*self.customer_tree.get_children())
+            self.customers = []
+
+            with open("customers.txt", 'r') as file:
+                for line in file:
+                    customer_info = line.strip().split(" - ")
+                    if len(customer_info) == 5:
+                        customer = {
+                            "first_name": customer_info[0],
+                            "last_name": customer_info[1],
+                            "email": customer_info[2],
+                            "address": customer_info[3],
+                            "phone_number": customer_info[4]
+                        }
+                        self.customers.append(customer)
+                        self.customer_tree.insert('', tk.END, values=(customer["first_name"], customer["last_name"], customer["email"], customer["address"], customer["phone_number"]))
 
 if __name__ == "__main__":
     root = tk.Tk()
