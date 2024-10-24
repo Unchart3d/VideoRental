@@ -1,0 +1,84 @@
+def test_video_creation():
+  # Test creating a video with all fields
+  video = Video("Movie", 2000, "Some Name", "R", "Drama")
+  assert video.name == "Movie"
+  assert video.year == 2000
+  assert video.director == "Some Name"
+  assert video.rating == "R"
+  assert video.genre == "Drama"
+  assert video.rental_status == "Available"
+
+  # Test creating a video with missing fields (should raise error)
+  with pytest.raises(TypeError):
+    video = Video("Movie")
+    
+def test_video_checkout():
+  video = Video("Movie", 2000, "FSome Name", "R", "Drama")
+  assert video.check_out() == True
+  assert video.rental_status == "Checked Out"
+
+  assert video.check_out() == False  # Can't check out an already checked out video
+
+def test_video_return():
+  video = Video("Movie", 2000, "Some Name", "R", "Drama")
+  video.check_out()
+  assert video.return_video() == True
+  assert video.rental_status == "Available"
+
+  assert video.return_video() == False  # Can't return an already available video
+  
+def test_add_video(mocker):
+  mocker.patch('tkinter.messagebox.showwarning')
+  
+  page = VideoPage(tk.Tk())
+
+  # Test adding a video with all fields
+  page.video.set("Other Movier")
+  page.year.set(2020)
+  page.director.set("Other Director")
+  page.rating.set("R")
+  page.genre.set("Action")
+  page.add_video()
+
+  assert len(page.videos) == 1
+  assert page.listbox.get(0) == "Other Movier | 2020 | Other Director | R | Action | Available"
+
+  # Test adding a video with missing fields
+  page.clear_fields()
+  page.add_video()
+  mocker.getvalue().assert_called_once_with("Input Error", "Please fill in all the fields.")
+  
+  
+def test_edit_video(mocker):
+  mocker.patch('tkinter.messagebox.showwarning')
+  
+  page = VideoPage(tk.Tk())
+  video = Video("This Movie", 2010, "Famous Director", "PG-13", "Romance")
+  page.videos.append(video)
+  page.listbox.insert(tk.END, str(video))
+
+  page.listbox.select_set(0)
+
+  # Test editing a video with all fields
+  page.video.set("This Movie")
+  page.year.set(2010)
+  page.director.set("Famous Director")
+  page.rating.set("PG-13")
+  page.genre.set("Romance")
+  page.edit_or_apply()
+
+  assert page.videos[0].name == "This Movie"
+  assert page.listbox.get(0) == "This Movie | 2010 | Famous Director | PG-13 | Romance | Available"
+
+  # Test editing a video with missing fields
+  page.clear_fields()
+  page.edit_or_apply()
+  mocker.getvalue().assert_called_once_with("Input Error", "Please fill in all the fields.")
+
+  # Test editing without selecting a video
+  page.clear_fields()
+  page.edit_or_apply()
+  mocker.getvalue().assert_called_with("Selection Error", "Please select a video to edit.")
+  
+  
+def test_remove_video(mocker):
