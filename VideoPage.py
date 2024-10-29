@@ -1,11 +1,11 @@
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
-from tkinter import filedialog
+from tkinter import ttk, messagebox
 import os
 import customer_information
-#connect customer to videos so we can see who rented what, specifically use their email or phone number
+
 DEFAULT_FILE_PATH = "videos_data.txt"
+
+
 class Video:
     def __init__(self, name, year, director, rating, genre, rental_status="Available"):
         self.name = name
@@ -29,6 +29,23 @@ class Video:
             self.rental_status = "Available"
             return True
         return False
+
+def load_customers_from_file(file_path="customers.txt"):
+    customers = []
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            for line in file:
+                customer_info = line.strip().split(" - ")
+                if len(customer_info) == 5:
+                    customer = {
+                        "first_name": customer_info[0],
+                        "last_name": customer_info[1],
+                        "email": customer_info[2],
+                        "address": customer_info[3],
+                        "phone_number": customer_info[4]
+                    }
+                    customers.append(customer)
+    return customers
 
 class VideoPage:
     def __init__(self, root):
@@ -78,6 +95,9 @@ class VideoPage:
         # Store videos in a list
         self.videos = []
 
+        # Dictionary to store rented videos with customer emails
+        self.rented_videos = {}
+
         # Automatically open the file dialog after window initialization
         self.root.after(100, self.open_file)
 
@@ -117,11 +137,14 @@ class VideoPage:
 
         self.return_video_btn = tk.Button(frame, text="Return", command=self.return_video)
         self.return_video_btn.pack(side="left", pady=10, padx=10)
-        
+
         self.rented_by = tk.Button(frame, text="Rented By", command=self.rented_by)
         self.rented_by.pack(side="left", pady=10, padx=10)
 
         frame.pack()
+
+        # Store references to all buttons
+        self.buttons = [self.add, self.edit, self.remove, self.save, self.checkout, self.return_video_btn, self.rented_by]
 
     def add_video(self):
         video_name = self.video.get().strip()
@@ -154,7 +177,7 @@ class VideoPage:
             self.remove.config(state="disabled")
             self.checkout.config(state="disabled")
             self.return_video_btn.config(state="disabled")
-            
+
             item = self.tree.item(selected_item)
             video = item['values']
 
@@ -198,7 +221,7 @@ class VideoPage:
 
             self.tree.item(self.current_edit_index, values=(video.name, video.year, video.director,
                                                             video.rating, video.genre, video.rental_status))
-            
+
             self.add.config(state="normal")
             self.remove.config(state="normal")
             self.checkout.config(state="normal")
@@ -227,9 +250,13 @@ class VideoPage:
         if selected_item:
             video = self.videos[int(self.tree.index(selected_item))]
             if video.check_out():
-                self.tree.item(selected_item, values=(video.name, video.year, video.director,
-                                                      video.rating, video.genre, video.rental_status))
-                self.update_file()
+                customer_info = self.select_customer()
+                if customer_info:
+                    customer_email = customer_info[2]
+                    self.rented_videos[video.name] = customer_email
+                    self.tree.item(selected_item, values=(video.name, video.year, video.director,
+                                                          video.rating, video.genre, video.rental_status))
+                    self.update_file()
             else:
                 messagebox.showwarning("Check out Error", "This video is already checked out.")
         else:
@@ -240,6 +267,7 @@ class VideoPage:
         if selected_item:
             video = self.videos[int(self.tree.index(selected_item))]
             if video.return_video():
+                self.rented_videos.pop(video.name, None)
                 self.tree.item(selected_item, values=(video.name, video.year, video.director,
                                                       video.rating, video.genre, video.rental_status))
                 self.update_file()
@@ -287,34 +315,34 @@ class VideoPage:
         self.root.update()
 
         results = [video for video in self.videos if (
-            search_term in video.name.lower() or
-            search_term in video.year.lower() or
-            search_term in video.director.lower() or
-            search_term in video.rating.lower() or
-            search_term in video.genre.lower()
+                search_term in video.name.lower() or
+                search_term in video.year.lower() or
+                search_term in video.director.lower() or
+                search_term in video.rating.lower() or
+                search_term in video.genre.lower()
         )]
-        
+
         for video in results:
             self.tree.insert('', tk.END, values=(video.name, video.year, video.director,
                                                  video.rating, video.genre, video.rental_status))
         self.root.update()
         if not results:
             messagebox.showinfo("No Results", "No videos matched your search.")
-            
+
     def rented_by(self):
         selected_item = self.tree.selection()
         if selected_item:
             item = self.tree.item(selected_item)
             video_name = item['values'][0]
-            
-            customer_email = customer_information.rented_videos.get(video_name)
-            
+
+            customer_email = self.rented_videos.get(video_name)
+
             if customer_email:
                 customer_info = customer_information.get_customer_info_by_email(customer_email)
                 if customer_info:
                     email = customer_info.get("email", "No email available")
                     phone = customer_info.get("phone", "No phone number available")
-                    name = customer_info.get("name", "Unknown")
+                    name = f"{customer_info.get('first_name', 'Unknown')} {customer_info.get('last_name', 'Unknown')}"
                     messagebox.showinfo("Rented By", f"Name: {name}\nEmail: {email}\nPhone: {phone}")
                 else:
                     messagebox.showerror("Error", "Customer information not found")
@@ -329,6 +357,49 @@ class VideoPage:
         self.director.delete(0, tk.END)
         self.rating.delete(0, tk.END)
         self.genre.delete(0, tk.END)
+
+    def select_customer(self):
+        for button in self.buttons:
+            button.config(state="disabled")
+
+        customer_window = tk.Toplevel(self.root)
+        customer_window.title("Select Customer")
+        customer_window.geometry("400x300")
+
+        # Create a Treeview to display customers
+        customer_tree = ttk.Treeview(customer_window, columns=("First Name", "Last Name", "Email"), show="headings")
+        customer_tree.heading("First Name", text="First Name")
+        customer_tree.heading("Last Name", text="Last Name")
+        customer_tree.heading("Email", text="Email")
+        customer_tree.pack(fill=tk.BOTH, expand=True)
+
+        # Populate the Treeview with customer data
+        for customer in self.get_customers():
+            customer_tree.insert("", tk.END, values=(customer["first_name"], customer["last_name"], customer["email"]))
+
+
+        selected_customer = None
+
+        def confirm_selection():
+            nonlocal selected_customer
+            selected_item = customer_tree.selection()
+            if selected_item:
+                selected_customer = customer_tree.item(selected_item, "values")
+                customer_window.destroy()
+            else:
+                messagebox.showwarning("Selection Error", "Please select a customer.")
+
+        confirm_button = tk.Button(customer_window, text="Confirm", command=confirm_selection)
+        confirm_button.pack(pady=10)
+
+        customer_window.wait_window()
+        for button in self.buttons:
+            button.config(state="normal")
+        return selected_customer
+
+    def get_customers(self):
+        return load_customers_from_file()
+
 
 if __name__ == "__main__":
     root = tk.Tk()
