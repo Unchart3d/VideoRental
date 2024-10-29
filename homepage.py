@@ -9,7 +9,7 @@ class VideoHomepage:
     def __init__(self, root):
         self.root = root
         self.root.title("Video Homepage")
-        self.root.geometry("1000x600")
+        self.root.geometry("1000x500")
         
         title_frame = tk.Frame(self.root, height=40)
         title_frame.grid(row=0, column=0, columnspan=3, sticky="ew")
