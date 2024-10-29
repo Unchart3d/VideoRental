@@ -14,6 +14,7 @@ class Customer:
         return f"{self.firstName} | {self.lastName} | {self.address} | {self.phone} | {self.email}"
         
 class CustomerManagementApp:
+    customers = []
     def __init__(self, root):
         self.root = root
         self.root.title("Customer Management")
@@ -61,8 +62,6 @@ class CustomerManagementApp:
         self.customer_tree.heading("Address", text="Address")
         self.customer_tree.heading("Phone Number", text="Phone Number")
         self.customer_tree.grid(row=4, column=0, columnspan=4, padx=10, pady=20, sticky="nsew")
-
-        self.customers = []
 
         self.open_file()
 
