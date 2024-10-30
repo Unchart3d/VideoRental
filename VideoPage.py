@@ -256,6 +256,9 @@ class VideoPage:
                     self.rented_videos[video.name] = customer_email
                     self.tree.item(selected_item, values=(video.name, video.year, video.director,
                                                           video.rating, video.genre, video.rental_status))
+                    
+                    with open("rented_videos.txt", "a") as file:
+                        file.write(f"{video.name} - {customer_email}\n")
                     self.update_file()
             else:
                 messagebox.showwarning("Check out Error", "This video is already checked out.")
@@ -297,6 +300,10 @@ class VideoPage:
                 for video in self.videos:
                     file.write(str(video) + "\n")
                 messagebox.showinfo("Save Successful", "The video data has been saved!")
+                
+            self.root.lift()
+            self.root.focus_force()
+            
         except Exception as e:
             messagebox.showerror("Error", f"Error saving file: {str(e)}")
 
@@ -330,22 +337,33 @@ class VideoPage:
             messagebox.showinfo("No Results", "No videos matched your search.")
 
     def rented_by(self):
+        self.root.lift()
+        self.root.focus_force()
         selected_item = self.tree.selection()
         if selected_item:
             item = self.tree.item(selected_item)
             video_name = item['values'][0]
 
-            customer_email = self.rented_videos.get(video_name)
+            rentals = []
+            
+            with open("rented_videos.txt", "r") as file:
+                for line in file:
+                    rental_info = line.strip().split(" - ")
+                    if rental_info[0] == video_name:
+                        rentals.append(rental_info[1])
+                    
+            if rentals:
+                rental_details = []
+                for email in rentals:
+                    customer_info = customer_information.get_customer_info_by_email(email)
+                    if customer_info:
+                        name = f"{customer_info.get('first_name', 'Unknown')} {customer_info.get('last_name', 'Unknown')}"
+                        phone = customer_info.get("phone", "No phone number available")
+                        rental_details.append(f"Name: {name}\nEmail: {email}\nPhone: {phone}")
 
-            if customer_email:
-                customer_info = customer_information.get_customer_info_by_email(customer_email)
-                if customer_info:
-                    email = customer_info.get("email", "No email available")
-                    phone = customer_info.get("phone", "No phone number available")
-                    name = f"{customer_info.get('first_name', 'Unknown')} {customer_info.get('last_name', 'Unknown')}"
-                    messagebox.showinfo("Rented By", f"Name: {name}\nEmail: {email}\nPhone: {phone}")
-                else:
-                    messagebox.showerror("Error", "Customer information not found")
+            # Display all past renters in a popup
+                rental_history = "\n\n".join(rental_details)
+                messagebox.showinfo("Rental History", f"Past rentals for '{video_name}':\n\n{rental_history}")
             else:
                 messagebox.showerror("Rented By", "No rental information found for this movie.")
         else:
@@ -359,12 +377,16 @@ class VideoPage:
         self.genre.delete(0, tk.END)
 
     def select_customer(self):
+        self.root.lift()
+        self.root.focus_force()
         for button in self.buttons:
             button.config(state="disabled")
 
         customer_window = tk.Toplevel(self.root)
         customer_window.title("Select Customer")
         customer_window.geometry("400x300")
+        
+        customer_window.attributes("-topmost", True)
 
         # Create a Treeview to display customers
         customer_tree = ttk.Treeview(customer_window, columns=("First Name", "Last Name", "Email"), show="headings")
@@ -403,5 +425,6 @@ class VideoPage:
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.attributes("-topmost", True)
     app = VideoPage(root)
     root.mainloop()
