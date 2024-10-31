@@ -1,0 +1,91 @@
+import unittest
+import os
+import tkinter as tk
+from customer_management_app import CustomerManagementApp
+
+class TestCustomerManagementApp(unittest.TestCase):
+    def setUp(self):
+        self.root = tk.Tk()
+        self.root.withdraw()  
+        self.app = CustomerManagementApp(self.root)
+        self.app.customers = []  
+
+    def tearDown(self):
+        if self.root:
+            self.root.destroy()
+        if os.path.exists("customers.txt"):
+            os.remove("customers.txt")
+
+    def test_add_customer(self):
+        # Populate the fields with test data
+        self.app.first_name_input.insert(0, "leo")
+        self.app.last_name_input.insert(0, "messi")
+        self.app.address_input.insert(0, "30 argentina")
+        self.app.phone_number_input.insert(0, "10101010")
+        self.app.email_input.insert(0, "leo10messi@gmail.com")
+        
+        
+        self.app.add_customer()
+        self.assertEqual(len(self.app.customers), 1)
+        self.assertEqual(self.app.customers[0]['first_name'], "leo")
+
+    def test_update_customer(self):
+        # First, add a customer
+        self.test_add_customer()
+        
+        item = self.app.customer_tree.get_children()[0]
+        self.app.customer_tree.selection_set(item)
+        
+       
+        self.app.first_name_input.delete(0, tk.END)
+        self.app.first_name_input.insert(0, "leo")
+        self.app.update_customer()
+        
+
+        updated_customer = self.app.customers[0]
+        self.assertEqual(updated_customer['first_name'], "leo")
+
+    def test_delete_customer(self):
+        # First, add a customer
+        self.test_add_customer()
+        
+        # Select the customer and delete
+        item = self.app.customer_tree.get_children()[0]
+        self.app.customer_tree.selection_set(item)
+        self.app.delete_customer()
+        
+        
+        self.assertEqual(len(self.app.customers), 0)
+        self.assertEqual(len(self.app.customer_tree.get_children()), 0)
+
+    def test_save_to_file(self):
+        # Add a customer and save to file
+        self.test_add_customer()
+        self.app.save_to_file()
+        
+        
+        self.assertTrue(os.path.exists("customers.txt"))
+        with open("customers.txt", "r") as file:
+            lines = file.readlines()
+            self.assertEqual(len(lines), 1)
+            self.assertIn("leo - messi - leo10messi@gmail.com - 30 argentina - 10101010", lines[0])
+
+    def test_open_file(self):
+        
+        self.test_add_customer()
+        self.app.save_to_file()
+        
+       
+        self.tearDown()
+        self.setUp()
+        
+        # Load customers from file
+        self.app.open_file()
+        
+        
+        self.assertEqual(len(self.app.customers), 1)
+        loaded_customer = self.app.customers[0]
+        self.assertEqual(loaded_customer['first_name'], "leo")
+
+if __name__ == '__main__':
+    unittest.main()
